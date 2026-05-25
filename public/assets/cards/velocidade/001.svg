@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" role="img" aria-label="Raptor de Orazca">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a0808"/>
+      <stop offset="100%" stop-color="#ff4444"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="420" rx="12" fill="url(#bg)"/>
+  <rect x="14" y="14" width="272" height="392" rx="8" fill="none" stroke="#ff4444" stroke-width="2" opacity="0.6"/>
+  <text x="150" y="190" text-anchor="middle" fill="#ffe8e8" font-family="Georgia, serif" font-size="20" font-weight="bold">Raptor de</text>
+  <text x="150" y="220" text-anchor="middle" fill="#ffe8e8" font-family="Georgia, serif" font-size="20" font-weight="bold">Orazca</text>
+  <text x="150" y="380" text-anchor="middle" fill="#ff4444" font-family="monospace" font-size="14">VELOCIDADE</text>
+</svg>

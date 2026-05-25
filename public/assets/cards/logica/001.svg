@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" role="img" aria-label="Pensamento L�gico">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a2840"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="420" rx="12" fill="url(#bg)"/>
+  <rect x="14" y="14" width="272" height="392" rx="8" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+  <text x="150" y="200" text-anchor="middle" fill="#e8f8ff" font-family="Georgia, serif" font-size="22" font-weight="bold">Pensamento</text>
+  <text x="150" y="230" text-anchor="middle" fill="#e8f8ff" font-family="Georgia, serif" font-size="22" font-weight="bold">L�gico</text>
+  <text x="150" y="380" text-anchor="middle" fill="#00d4ff" font-family="monospace" font-size="14">L�GICA</text>
+</svg>

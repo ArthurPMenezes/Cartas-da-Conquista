@@ -36,6 +36,18 @@ function randomCardOf(tipo) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+/** Preenche card_image/card_name a partir do catálogo (fonte atualizada vs. URLs antigas no banco) */
+function enrichCard(card) {
+  const pool = CARD_CATALOG[card.card_type] || [];
+  const fromCatalog = card.card_id ? pool.find(c => c.id === card.card_id) : null;
+  const fallbackImage = pool[0]?.image || null;
+  return {
+    ...card,
+    card_name:  card.card_name  || fromCatalog?.name  || card.card_type,
+    card_image: fromCatalog?.image || card.card_image || fallbackImage,
+  };
+}
+
 // ── Middlewares ───────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -100,7 +112,7 @@ app.get('/api/cards/catalog', (req, res) => {
 
 app.get('/api/student/profile', requireStudent, async (req, res) => {
   const student = await db.findById(req.session.studentId);
-  const cards   = await db.getCards(req.session.studentId);
+  const cards   = (await db.getCards(req.session.studentId)).map(enrichCard);
   const log     = await db.getXPLog(req.session.studentId);
   res.json({ student, cards, log });
 });

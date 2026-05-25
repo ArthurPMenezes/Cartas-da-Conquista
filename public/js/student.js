@@ -67,7 +67,7 @@ function renderCards(cards) {
     return;
   }
 
-  grid.innerHTML = cards.map(renderGameCard).join('');
+  grid.innerHTML = cards.map(c => renderGameCard(c, cardCatalog)).join('');
 }
 
 // ── Renderiza o histórico de XP ─────────────────────────
@@ -191,12 +191,17 @@ function renderPickerGrid(type) {
     return;
   }
 
-  grid.innerHTML = cards.map(card => `
-    <div class="picker-card" onclick="selectCard('${type}', '${card.id}')">
-      <div class="picker-card-name">${card.name}</div>
-      <div class="picker-card-id">ID: ${card.id}</div>
-    </div>
-  `).join('');
+  grid.innerHTML = cards.map(card => {
+    const imageUrl = card.image || resolveCardImage({ card_type: type, card_id: card.id }, cardCatalog);
+    const artStyle = imageUrl ? `style="background-image:url('${imageUrl.replace(/'/g, '%27')}')"` : '';
+    return `
+      <div class="picker-card" onclick="selectCard('${type}', '${card.id}')">
+        <div class="picker-card-art" ${artStyle} role="img" aria-label="${escapeHtml(card.name)}"></div>
+        <div class="picker-card-name">${escapeHtml(card.name)}</div>
+        <div class="picker-card-id">ID: ${card.id}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ── Selecionar e comprar carta específica ────────────

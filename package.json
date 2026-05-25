@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "npx nodemon server.js"
+    "dev": "npx nodemon server.js",
+    "verify:cards": "node scripts/verify-card-images.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

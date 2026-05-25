@@ -520,30 +520,27 @@ label {
 
 /* Garante que ícone e nome fiquem acima do overlay */
 .game-card .card-icon,
+.game-card .card-footer,
 .game-card .card-name,
 .game-card .card-rarity {
   position: relative;
   z-index: 1;
 }
 
-/* ── Classes de imagem por tipo de carta ──────────────
-   Adicione ou remova conforme seus arquivos de imagem  */
-.card-img-logica      { background-image: url('/assets/cards/logica.jpg'); }
-.card-img-crescimento { background-image: url('/assets/cards/crescimento.jpg'); }
-.card-img-suporte     { background-image: url('/assets/cards/suporte.jpg'); }
-.card-img-velocidade  { background-image: url('/assets/cards/red.jpg'); }
-.card-img-mestra      { background-image: url('/assets/cards/mestra.jpg'); }
-
-.card-logica      { color: var(--card-logica);      border-color: var(--card-logica);      box-shadow: 0 0 15px rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
-.card-crescimento { color: var(--card-crescimento);  border-color: var(--card-crescimento);  box-shadow: 0 0 15px rgba(0,255,157,0.3); background: rgba(0,255,157,0.05); }
-.card-suporte     { color: var(--card-suporte);     border-color: var(--card-suporte);     box-shadow: 0 0 15px rgba(255,215,0,0.3); background: rgba(255,215,0,0.05); }
-.card-velocidade {
-  color: var(--card-velocidade);
-  border-color: var(--card-velocidade);
-  box-shadow: 0 0 15px rgba(255,68,68,0.3);
-  background-color: rgba(255,68,68,0.05);
+.game-card--has-image .card-icon {
+  display: none;
 }
-.card-mestra      { color: var(--card-mestra);      border-color: var(--card-mestra);      box-shadow: 0 0 20px rgba(180,79,255,0.5); background: rgba(180,79,255,0.08); }
+
+.game-card .card-footer {
+  width: 100%;
+  margin-top: auto;
+}
+
+.card-logica      { color: var(--card-logica);      border-color: var(--card-logica);      box-shadow: 0 0 15px rgba(0,212,255,0.3); background-color: rgba(0,212,255,0.05); }
+.card-crescimento { color: var(--card-crescimento);  border-color: var(--card-crescimento);  box-shadow: 0 0 15px rgba(0,255,157,0.3); background-color: rgba(0,255,157,0.05); }
+.card-suporte     { color: var(--card-suporte);     border-color: var(--card-suporte);     box-shadow: 0 0 15px rgba(255,215,0,0.3); background-color: rgba(255,215,0,0.05); }
+.card-velocidade  { color: var(--card-velocidade);  border-color: var(--card-velocidade);  box-shadow: 0 0 15px rgba(255,68,68,0.3);   background-color: rgba(255,68,68,0.05); }
+.card-mestra      { color: var(--card-mestra);      border-color: var(--card-mestra);      box-shadow: 0 0 20px rgba(180,79,255,0.5); background-color: rgba(180,79,255,0.08); }
 
 .card-icon { font-size: 2rem; filter: drop-shadow(0 0 8px currentColor); }
 .card-name {
@@ -894,16 +891,27 @@ tr:hover td { background: rgba(0,212,255,0.03); }
   border: 2px solid rgba(0, 212, 255, 0.2);
   border-radius: 8px;
   background: rgba(10, 16, 32, 0.6);
-  padding: 0.8rem;
+  padding: 0.5rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: stretch;
+  gap: 0.4rem;
   position: relative;
   overflow: hidden;
+}
+
+.picker-card-art {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.35);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(0, 212, 255, 0.25);
 }
 
 .picker-card::before {

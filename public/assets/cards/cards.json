@@ -2,22 +2,57 @@
     "logica": [
         {
             "id": "001",
-            "name": "Pensamento Lógico",
+            "name": "Místico de Dakra",
             "image": "/assets/cards/logica/001.png"
+        },
+        {
+            "id": "002",
+            "name": "Ictiomorfose",
+            "image": "/assets/cards/logica/002.png"
+        },
+        {
+            "id": "003",
+            "name": "Vândalo Fada",
+            "image": "/assets/cards/logica/003.png"
         }
     ],
     "crescimento": [
         {
             "id": "001",
-            "name": "Desenvolvimento Pessoal",
+            "name": "Mowu, Companheiro Leal",
             "image": "/assets/cards/crescimento/001.png"
+        },
+        {
+            "id": "002",
+            "name": "Filhote Querido",
+            "image": "/assets/cards/crescimento/002.png"
+        },
+        {
+            "id": "003",
+            "name": "Convocador da Manada Cristado",
+            "image": "/assets/cards/crescimento/003.png"
         }
     ],
     "suporte": [
         {
             "id": "001",
-            "name": "Mão Amiga",
+            "name": "Escavação Meticulosa",
             "image": "/assets/cards/suporte/001.png"
+        },
+        {
+            "id": "002",
+            "name": "Pegar em Armas",
+            "image": "/assets/cards/suporte/002.png"
+        },
+        {
+            "id": "003",
+            "name": "Anel do esquecimento",
+            "image": "/assets/cards/suporte/003.png"
+        },
+        {
+            "id": "004",
+            "name": "Heroísmo Cavaleiroso",
+            "image": "/assets/cards/suporte/004.png"
         }
     ],
     "velocidade": [
@@ -25,13 +60,53 @@
             "id": "001",
             "name": "Raptor de Orazca",
             "image": "/assets/cards/velocidade/001.png"
+        },
+        {
+            "id": "002",
+            "name": "Intruso Voraz",
+            "image": "/assets/cards/velocidade/002.png"
+        },
+        {
+            "id": "003",
+            "name": "Corsário Bravateiro",
+            "image": "/assets/cards/velocidade/003.png"
         }
     ],
     "mestra": [
         {
             "id": "001",
-            "name": "Maestria",
+            "name": "Rapaces da Meia-Noite",
             "image": "/assets/cards/mestra/001.png"
+        },
+        {
+            "id": "002",
+            "name": "Tropas Vetustas",
+            "image": "/assets/cards/mestra/002.png"
+        },
+        {
+            "id": "003",
+            "name": "Hipótese Fulminante",
+            "image": "/assets/cards/mestra/003.png"
+        },
+        {
+            "id": "004",
+            "name": "Teleportal",
+            "image": "/assets/cards/mestra/004.png"
+        },
+        {
+            "id": "005",
+            "name": "Canhão Crepitante Sagrado",
+            "image": "/assets/cards/mestra/005.png"
+        },
+        {
+            "id": "006",
+            "name": "Extração de Essência",
+            "image": "/assets/cards/mestra/006.png"
+        },
+        {
+            "id": "007",
+            "name": "Extremely Slow Zombie",
+            "image": "/assets/cards/mestra/007.png"
         }
     ]
 }

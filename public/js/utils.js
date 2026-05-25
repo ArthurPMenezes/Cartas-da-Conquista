@@ -43,6 +43,15 @@ function formatDate(iso) {
   return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 /**
  * Mapeia tipo de carta para emoji e label
  */
@@ -50,21 +59,52 @@ const CARD_META = {
   logica:       { emoji: '🧠', label: 'Lógica',       cls: 'card-logica'      },
   crescimento:  { emoji: '🌱', label: 'Crescimento',  cls: 'card-crescimento' },
   suporte:      { emoji: '🤝', label: 'Suporte',      cls: 'card-suporte'     },
-  velocidade:   { emoji: '⚡', label: 'Velocidade',   cls: 'card-velocidade card-img-velocidade'  },
+  velocidade:   { emoji: '⚡', label: 'Velocidade',   cls: 'card-velocidade'  },
   mestra:       { emoji: '👑', label: 'Mestra',       cls: 'card-mestra'      },
 };
 
 /**
- * Cria o HTML de um game-card visual
+ * Resolve a URL da imagem: MongoDB → catálogo (card_id) → fallback por tipo
  */
-function renderGameCard(card) {
+function resolveCardImage(card, catalog = {}) {
+  const pool = catalog[card?.card_type] || [];
+  if (card?.card_id) {
+    const found = pool.find(c => c.id === card.card_id);
+    if (found?.image) return found.image;
+  }
+
+  if (card?.card_image) return card.card_image;
+
+  if (pool.length > 0 && pool[0].image) return pool[0].image;
+
+  const typeFallback = {
+    logica: '/assets/cards/fallback/logica.svg',
+    crescimento: '/assets/cards/fallback/crescimento.svg',
+    suporte: '/assets/cards/fallback/suporte.svg',
+    velocidade: '/assets/cards/fallback/velocidade.svg',
+    mestra: '/assets/cards/fallback/mestra.svg',
+  };
+  return typeFallback[card?.card_type] || null;
+}
+
+/**
+ * Cria o HTML de um game-card visual com imagem de fundo
+ */
+function renderGameCard(card, catalog = {}) {
   const meta = CARD_META[card.card_type] || { emoji: '🃏', label: card.card_type, cls: 'card-logica' };
+  const displayName = card.card_name || meta.label;
+  const imageUrl = resolveCardImage(card, catalog);
+  const hasImage = Boolean(imageUrl);
+  const bgStyle = hasImage ? `background-image:url('${imageUrl.replace(/'/g, '%27')}');` : '';
+
   return `
-    <div class="game-card ${meta.cls}" card-img-${card.card_type} title="${meta.label} — adquirida em ${formatDate(card.acquired_at)}">
-      <div class="card-icon">${meta.emoji}</div>
-      <div>
-        <div class="card-name">${meta.label}</div>
-        <div class="card-rarity">${card.rarity}</div>
+    <div class="game-card ${meta.cls}${hasImage ? ' game-card--has-image' : ''}"
+         style="${bgStyle}"
+         title="${escapeHtml(displayName)} — adquirida em ${formatDate(card.acquired_at)}">
+      ${hasImage ? '' : `<div class="card-icon">${meta.emoji}</div>`}
+      <div class="card-footer">
+        <div class="card-name">${escapeHtml(displayName)}</div>
+        <div class="card-rarity">${escapeHtml(card.rarity || '')}</div>
       </div>
     </div>
   `;
