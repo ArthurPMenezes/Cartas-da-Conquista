@@ -2,22 +2,22 @@
     "logica": [
         {
             "id": "001",
-            "name": "Card name",
-            "image": "/assets/cards/logica/001.jpg"
+            "name": "Pensamento Lógico",
+            "image": "/assets/cards/logica/001.png"
         }
     ],
     "crescimento": [
         {
             "id": "001",
-            "name": "Card name",
-            "image": "/assets/cards/crescimento/001.jpg"
+            "name": "Desenvolvimento Pessoal",
+            "image": "/assets/cards/crescimento/001.png"
         }
     ],
     "suporte": [
         {
             "id": "001",
-            "name": "Card name",
-            "image": "/assets/cards/suporte/001.jpg"
+            "name": "Mão Amiga",
+            "image": "/assets/cards/suporte/001.png"
         }
     ],
     "velocidade": [
@@ -30,8 +30,8 @@
     "mestra": [
         {
             "id": "001",
-            "name": "Card name",
-            "image": "/assets/cards/mestra/001.jpg"
+            "name": "Maestria",
+            "image": "/assets/cards/mestra/001.png"
         }
     ]
 }

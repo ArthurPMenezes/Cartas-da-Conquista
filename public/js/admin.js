@@ -117,11 +117,11 @@ function renderTable(students) {
         <td>
           <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
             <button class="btn btn-green" style="padding:0.25rem 0.5rem;font-size:0.6rem"
-                    onclick="quickXP(${s.id}, 10, 'Completou o exercício do dia')">+10</button>
+                    onclick="quickXP('${s.id}', 10, 'Completou o exercício do dia')">+10</button>
             <button class="btn btn-blue" style="padding:0.25rem 0.5rem;font-size:0.6rem"
-                    onclick="quickXP(${s.id}, 30, 'Desafio extra de Lógica')">+30</button>
+                    onclick="quickXP('${s.id}', 30, 'Desafio extra de Lógica')">+30</button>
             <button class="btn btn-gold" style="padding:0.25rem 0.5rem;font-size:0.6rem"
-                    onclick="quickXP(${s.id}, 50, 'Completou todos os desafios da semana')">+50</button>
+                    onclick="quickXP('${s.id}', 50, 'Completou todos os desafios da semana')">+50</button>
           </div>
         </td>
       </tr>

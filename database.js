@@ -3,12 +3,25 @@
 // Usa a variável de ambiente MONGO_URI para conectar
 // ============================================================
 const { MongoClient, ObjectId } = require('mongodb');
+const path = require('path');
+const fs = require('fs');
 
-// ── URI vem da variável de ambiente (definida no Render) ──
-const MONGO_URI = process.env.MONGO_URI;
+// ── Tenta carregar .env manualmente se não estiver definido ──
+let MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const match = envContent.match(/MONGO_URI=(.+)/);
+    if (match) {
+      MONGO_URI = match[1].trim();
+    }
+  }
+}
+
 if (!MONGO_URI) {
   console.error('\n❌ ERRO: variável MONGO_URI não definida!');
-  console.error('   Defina ela no Render > Environment > MONGO_URI\n');
+  console.error('   Defina ela no arquivo .env ou no Render > Environment\n');
   process.exit(1);
 }
 
@@ -103,11 +116,14 @@ async function changeXP(studentId, delta, reason) {
 }
 
 /** Adiciona carta ao aluno */
-async function addCard(studentId, cardType, rarity = 'comum') {
+async function addCard(studentId, cardType, rarity = 'comum', cardId = null, cardName = null, cardImage = null) {
   await cardsCol.insertOne({
     studentId: studentId.toString(),
     card_type: cardType,
     rarity,
+    card_id: cardId,
+    card_name: cardName,
+    card_image: cardImage,
     acquired_at: new Date(),
   });
 }
