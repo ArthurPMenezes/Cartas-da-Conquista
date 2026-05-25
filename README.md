@@ -8,8 +8,9 @@ Sistema web gamificado de XP e cartas para sala de aula, inspirado no banner *Ca
 
 ### Pré-requisitos
 - [Node.js](https://nodejs.org/) versão 18 ou superior
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (para produção/deploy)
 
-### Instalação
+### Instalação Local
 
 ```bash
 # 1. Entre na pasta do projeto
@@ -23,6 +24,22 @@ npm start
 ```
 
 O servidor inicia em **http://localhost:3000**
+
+### Deploy no Render
+
+1. **Crie uma conta** em [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. **Crie um cluster** e obtenha a string de conexão
+3. **No Render, adicione a variável de ambiente:**
+   - Vá em: Render > Seu App > Environment
+   - **Nome:** `MONGO_URI`
+   - **Valor:** Cole a string de conexão do MongoDB Atlas
+4. **Faça deploy** do código
+5. **Acesse:** `https://seu-app.onrender.com`
+
+**Exemplo de MONGO_URI:**
+```
+mongodb+srv://usuario:senha@cluster.mongodb.net/cartas?retryWrites=true&w=majority
+```
 
 ---
 
