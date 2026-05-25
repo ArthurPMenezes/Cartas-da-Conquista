@@ -768,6 +768,191 @@ tr:hover td { background: rgba(0,212,255,0.03); }
 }
 
 /* ════════════════════════════════════════════════════════
+   MODAL: Seletor de Cartas
+   ════════════════════════════════════════════════════════ */
+
+/* Overlay do modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 15, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+/* Caixa do modal */
+.modal-box {
+  background: linear-gradient(135deg, #0a1020 0%, #060b18 100%);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(180, 79, 255, 0.2), inset 0 0 20px rgba(0, 212, 255, 0.05);
+  max-width: 90%;
+  max-height: 90vh;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+/* Cabeçalho do modal */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+  padding-bottom: 1rem;
+}
+
+.modal-header h3 {
+  color: var(--neon-blue);
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+/* Botão fechar */
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--neon-blue);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  transition: all 0.2s;
+  font-family: var(--font-display);
+}
+
+.modal-close:hover {
+  color: var(--neon-red);
+  transform: scale(1.1);
+}
+
+/* Abas de tipo */
+.picker-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.picker-tab {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.picker-tab:hover {
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.picker-tab.active {
+  border-color: var(--neon-blue);
+  background: rgba(0, 212, 255, 0.15);
+  color: var(--neon-blue);
+  font-weight: 600;
+}
+
+/* Grade de cartas */
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+  max-height: 500px;
+  padding: 0.5rem;
+}
+
+.picker-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.picker-grid::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* Card no picker */
+.picker-card {
+  border: 2px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(10, 16, 32, 0.6);
+  padding: 0.8rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.picker-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(180, 79, 255, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.picker-card:hover {
+  border-color: var(--neon-blue);
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 10px rgba(0, 212, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.picker-card:hover::before {
+  opacity: 1;
+}
+
+.picker-card-name {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  word-break: break-word;
+  position: relative;
+  z-index: 1;
+}
+
+.picker-card-id {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  position: relative;
+  z-index: 1;
+}
+
+/* Dica */
+.picker-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* ════════════════════════════════════════════════════════
    RESPONSIVO
    ════════════════════════════════════════════════════════ */
 @media (max-width: 900px) {

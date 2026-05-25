@@ -4,6 +4,7 @@
 const express = require('express');
 const session = require('express-session');
 const path    = require('path');
+const fs      = require('fs');
 const db      = require('./database');
 
 const app  = express();
@@ -12,9 +13,26 @@ const PORT = process.env.PORT || 3000;
 // ── Senha do professor (admin) ────────────────────────────
 const ADMIN_PASSWORD = 'professor2024';
 
+// ── Catálogo de cartas (lido do JSON) ─────────────────────
+const CATALOG_PATH = path.join(__dirname, 'public/assets/cards/cards.json');
+let CARD_CATALOG = {};
+try {
+  CARD_CATALOG = JSON.parse(fs.readFileSync(CATALOG_PATH, 'utf8'));
+  console.log('🃏 Catálogo de cartas carregado:', Object.keys(CARD_CATALOG).map(k => `${k}(${CARD_CATALOG[k].length})`).join(', '));
+} catch (e) {
+  console.warn('⚠ Catálogo cards.json não encontrado ou inválido. Usando catálogo vazio.');
+}
+
 // ── Tipos de carta e custos da lojinha ───────────────────
 const CARD_TYPES = ['logica', 'crescimento', 'suporte', 'velocidade'];
 const CARD_COSTS = { comum: 50, especifica: 100, mestra: null };
+
+// ── Helper: pega carta aleatória de um tipo ───────────────
+function randomCardOf(tipo) {
+  const pool = CARD_CATALOG[tipo];
+  if (!pool || pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
 // ── Middlewares ───────────────────────────────────────────
 app.use(express.json());
@@ -69,6 +87,11 @@ app.get('/api/me', (req, res) => {
   res.json({ role: 'guest' });
 });
 
+// ── Catálogo público (alunos e admin precisam) ─────────────
+app.get('/api/cards/catalog', (req, res) => {
+  res.json(CARD_CATALOG);
+});
+
 // ══════════════════════════════════════════════════════════
 // ROTAS DO ALUNO
 // ══════════════════════════════════════════════════════════
@@ -81,8 +104,8 @@ app.get('/api/student/profile', requireStudent, async (req, res) => {
 });
 
 app.post('/api/student/buy-card', requireStudent, async (req, res) => {
-  const { type } = req.body;
-  const student  = await db.findById(req.session.studentId);
+  const { type, cardType, cardId } = req.body;
+  const student = await db.findById(req.session.studentId);
 
   if (type === 'mestra')
     return res.status(403).json({ error: 'A Carta Mestra só é concedida pelo professor ao completar o projeto final.' });
@@ -92,15 +115,45 @@ app.post('/api/student/buy-card', requireStudent, async (req, res) => {
   if (student.xp < cost)
     return res.status(400).json({ error: `XP insuficiente. Você precisa de ${cost} XP.` });
 
-  const cardType = type === 'especifica'
-    ? req.body.cardType || CARD_TYPES[Math.floor(Math.random() * CARD_TYPES.length)]
+  // ── Determina o tipo final ────────────────────────────
+  const finalType = (type === 'especifica' && cardType)
+    ? cardType
     : CARD_TYPES[Math.floor(Math.random() * CARD_TYPES.length)];
 
-  await db.changeXP(req.session.studentId, -cost, `Comprou carta ${type}: ${cardType}`);
-  await db.addCard(req.session.studentId, cardType, type === 'especifica' ? 'especifica' : 'comum');
+  // ── Determina a carta específica ──────────────────────
+  const pool = CARD_CATALOG[finalType] || [];
+  let selectedCard = null;
+
+  if (type === 'especifica' && cardId) {
+    // Aluno escolheu uma carta específica
+    selectedCard = pool.find(c => c.id === cardId) || null;
+  }
+  // Se não escolheu (comum) ou não achou o id: sorteia
+  if (!selectedCard && pool.length > 0) {
+    selectedCard = pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  const rarity    = type === 'especifica' ? 'especifica' : 'comum';
+  const cardName  = selectedCard?.name  || finalType;
+  const cardImage = selectedCard?.image || null;
+  const cId       = selectedCard?.id    || null;
+
+  await db.changeXP(
+    req.session.studentId,
+    -cost,
+    `Comprou carta ${rarity}: ${cardName}`
+  );
+  await db.addCard(req.session.studentId, finalType, rarity, cId, cardName, cardImage);
 
   const updated = await db.findById(req.session.studentId);
-  res.json({ ok: true, xp: updated.xp, cardType });
+  res.json({
+    ok: true,
+    xp:        updated.xp,
+    cardType:  finalType,
+    cardName,
+    cardImage,
+    cardId:    cId,
+  });
 });
 
 // ══════════════════════════════════════════════════════════
@@ -126,11 +179,27 @@ app.post('/api/admin/xp', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/admin/give-card', requireAdmin, async (req, res) => {
-  const { studentId, cardType, rarity } = req.body;
+  const { studentId, cardType, rarity, cardId } = req.body;
   if (!studentId || !cardType)
     return res.status(400).json({ error: 'Dados incompletos' });
-  await db.addCard(studentId, cardType, rarity || 'comum');
-  res.json({ ok: true });
+
+  // Resolve a carta específica (se informada) ou sorteia
+  const pool = CARD_CATALOG[cardType] || [];
+  let selectedCard = null;
+
+  if (cardId) {
+    selectedCard = pool.find(c => c.id === cardId) || null;
+  }
+  if (!selectedCard && pool.length > 0) {
+    selectedCard = pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  const cardName  = selectedCard?.name  || cardType;
+  const cardImage = selectedCard?.image || null;
+  const cId       = selectedCard?.id    || null;
+
+  await db.addCard(studentId, cardType, rarity || 'comum', cId, cardName, cardImage);
+  res.json({ ok: true, cardName, cardImage });
 });
 
 app.get('/api/admin/log', requireAdmin, async (req, res) => {

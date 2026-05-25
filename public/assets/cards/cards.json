@@ -1,0 +1,37 @@
+{
+    "logica": [
+        {
+            "id": "001",
+            "name": "Card name",
+            "image": "/assets/cards/logica/001.jpg"
+        }
+    ],
+    "crescimento": [
+        {
+            "id": "001",
+            "name": "Card name",
+            "image": "/assets/cards/crescimento/001.jpg"
+        }
+    ],
+    "suporte": [
+        {
+            "id": "001",
+            "name": "Card name",
+            "image": "/assets/cards/suporte/001.jpg"
+        }
+    ],
+    "velocidade": [
+        {
+            "id": "001",
+            "name": "Raptor de Orazca",
+            "image": "/assets/cards/velocidade/001.png"
+        }
+    ],
+    "mestra": [
+        {
+            "id": "001",
+            "name": "Card name",
+            "image": "/assets/cards/mestra/001.jpg"
+        }
+    ]
+}

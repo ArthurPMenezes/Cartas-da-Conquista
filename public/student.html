@@ -8,187 +8,172 @@
 </head>
 <body>
 
-<!-- ── PÁGINA DO ALUNO ─────────────────────────────────── -->
-<div id="student-page">
-
-  <!-- Header fixo -->
-  <header class="student-header">
-    <span class="header-brand">◈ CARTAS DE CONQUISTA</span>
-    <div class="header-player">
-      <span class="player-name">jogador: <span id="header-name">—</span></span>
-      <span class="header-xp" id="header-xp">0 XP</span>
-      <button class="btn btn-red" style="padding:0.4rem 0.8rem;font-size:0.65rem"
-              onclick="logout()">SAIR</button>
-    </div>
-  </header>
-
-  <main class="student-main">
-
-    <!-- ── XP Hero Banner ────────────────────────────── -->
-    <div class="panel xp-hero">
-      <div>
-        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);letter-spacing:0.15em;margin-bottom:0.3rem">XP ATUAL</div>
-        <div class="xp-big"><span id="xp-display">0</span> <span>XP</span></div>
-      </div>
-
-      <div class="xp-progress-section">
-        <div class="xp-bar-labels">
-          <span>Progresso para Carta Mestra</span>
-          <span id="xp-pct">0%</span>
-        </div>
-        <div class="xp-bar-wrap">
-          <div class="xp-bar-fill" id="xp-bar" style="width:0%"></div>
-        </div>
-        <div class="xp-ticks">
-          <span>0</span><span>250</span><span>500</span><span>750</span><span>1000</span>
-        </div>
-      </div>
-
-      <div class="xp-meta-badge">
-        <span class="crown">👑</span>
-        <span>META:</span>
-        <span>1000 XP</span>
-      </div>
+<!-- ── MODAL: Seletor de Carta ────────────────────────── -->
+<div id="card-picker-modal" class="hidden modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🃏 Escolher Carta</h3>
+      <button class="modal-close" onclick="closeCardPicker()">✕</button>
     </div>
 
-    <!-- ── Coluna principal ───────────────────────────── -->
-    <div style="display:flex;flex-direction:column;gap:1.5rem">
+    <!-- Abas de tipo -->
+    <div id="picker-tabs" class="picker-tabs"></div>
 
-      <!-- Cartas coletadas -->
-      <div class="panel cards-section">
-        <div class="section-title">🃏 Minhas Cartas</div>
-        <div class="cards-grid" id="cards-grid">
-          <div class="card-empty">Você ainda não possui cartas.<br>Compre na lojinha!</div>
-        </div>
-      </div>
+    <!-- Grid de cartas -->
+    <div id="picker-grid" class="picker-grid"></div>
 
-      <!-- Tarefas e recompensas (somente leitura) -->
-      <div class="panel cards-section">
-        <div class="section-title">📋 Tarefas e Recompensas</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Tarefa</th>
-              <th>XP</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>✅ Completar exercício do dia</td>  <td style="color:var(--neon-gold);font-family:var(--font-display)">10 XP</td></tr>
-            <tr><td>🤝 Ajudar um colega</td>             <td style="color:var(--neon-gold);font-family:var(--font-display)">15 XP</td></tr>
-            <tr><td>🧩 Desafio extra de Lógica</td>       <td style="color:var(--neon-gold);font-family:var(--font-display)">30 XP</td></tr>
-            <tr><td>🐛 Encontrar e reportar um bug</td>   <td style="color:var(--neon-gold);font-family:var(--font-display)">20 XP</td></tr>
-            <tr><td>💡 Propor melhoria ou ideia</td>      <td style="color:var(--neon-gold);font-family:var(--font-display)">25 XP</td></tr>
-            <tr><td>🚀 Apresentar projeto/solução</td>    <td style="color:var(--neon-gold);font-family:var(--font-display)">40 XP</td></tr>
-            <tr><td>🏆 Completar desafios da semana</td>  <td style="color:var(--neon-gold);font-family:var(--font-display)">50 XP</td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:0.8rem;padding:0 0.2rem">
-          * O XP é concedido pelo professor conforme você realiza as tarefas.
-        </p>
-      </div>
-
-      <!-- Histórico de XP -->
-      <div class="panel log-section">
-        <div class="section-title">📜 Histórico de XP</div>
-        <div class="log-list" id="log-list">
-          <p style="font-size:0.75rem;color:var(--text-dim);font-family:var(--font-mono)">
-            Nenhuma atividade ainda.
-          </p>
-        </div>
-      </div>
-
-    </div><!-- /coluna principal -->
-
-    <!-- ── Coluna lateral: lojinha ────────────────────── -->
-    <div style="display:flex;flex-direction:column;gap:1.5rem">
-
-      <div class="panel shop-section">
-        <div class="section-title">🛒 Lojinha de Cards</div>
-        <div class="shop-items">
-
-          <!-- Carta Comum Aleatória -->
-          <div class="shop-item">
-            <div class="shop-item-icon">🃏</div>
-            <div class="shop-item-info">
-              <div class="shop-item-name">Carta Comum Aleatória</div>
-              <div class="shop-item-desc">Tipo sorteado ao acaso</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
-              <div class="shop-item-price">50 XP</div>
-              <button class="btn btn-blue" style="padding:0.3rem 0.7rem;font-size:0.6rem"
-                      onclick="buyCard('comum')">COMPRAR</button>
-            </div>
-          </div>
-
-          <!-- Carta de Cor Específica -->
-          <div class="shop-item">
-            <div class="shop-item-icon">🎴</div>
-            <div class="shop-item-info">
-              <div class="shop-item-name">Carta de Cor Específica</div>
-              <div class="shop-item-desc">Escolha o tipo desejado</div>
-              <select id="card-type-select" class="card-type-select" style="display:block;margin-top:0.4rem;font-size:0.75rem;padding:0.3rem">
-                <option value="logica">Lógica</option>
-                <option value="crescimento">Crescimento</option>
-                <option value="suporte">Suporte</option>
-                <option value="velocidade">Velocidade</option>
-              </select>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
-              <div class="shop-item-price">100 XP</div>
-              <button class="btn btn-purple" style="padding:0.3rem 0.7rem;font-size:0.6rem"
-                      onclick="buyCard('especifica')">COMPRAR</button>
-            </div>
-          </div>
-
-          <!-- Carta Mestra -->
-          <div class="shop-item" style="border-color:rgba(180,79,255,0.2);background:rgba(180,79,255,0.04)">
-            <div class="shop-item-icon">👑</div>
-            <div class="shop-item-info">
-              <div class="shop-item-name" style="color:var(--neon-purple)">Carta Mestra</div>
-              <div class="shop-item-desc">Apenas quem completar o projeto final</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
-              <div class="shop-item-price" style="color:var(--neon-purple);font-size:0.65rem;text-align:right;max-width:80px">Somente via projeto</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Regras básicas -->
-      <div class="panel" style="padding:1.5rem">
-        <div class="section-title">📖 Regras Básicas</div>
-        <ul style="font-size:0.8rem;color:var(--text-muted);font-family:var(--font-mono);line-height:1.8;list-style:none;padding:0">
-          <li>▸ Respeite todos os colegas</li>
-          <li>▸ Cumpra prazos e combine entregas</li>
-          <li>▸ Foque na qualidade e no aprendizado</li>
-          <li>▸ Não é permitido trapacear</li>
-          <li>▸ Dúvidas? Pergunte!</li>
-          <li>▸ A colaboração é sempre bem-vinda!</li>
-        </ul>
-      </div>
-
-      <!-- Tipos de cartas -->
-      <div class="panel" style="padding:1.5rem">
-        <div class="section-title">📚 Tipos de Cartas</div>
-        <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;font-family:var(--font-mono)">
-          <div style="color:var(--card-logica)">🧠 Lógica — raciocínio e resolução</div>
-          <div style="color:var(--card-crescimento)">🌱 Crescimento — aprendizado contínuo</div>
-          <div style="color:var(--card-suporte)">🤝 Suporte — ajudar o time</div>
-          <div style="color:var(--card-velocidade)">⚡ Velocidade — agilidade e eficiência</div>
-          <div style="color:var(--card-mestra)">👑 Carta Mestra — a lenda!</div>
-        </div>
-      </div>
-
-    </div><!-- /coluna lateral -->
-
-  </main>
+    <p class="picker-hint">Clique na carta que deseja adquirir</p>
+  </div>
 </div>
 
-<!-- Toast container -->
+<!-- ── DASHBOARD DO ALUNO ─────────────────────────────── -->
+<header class="student-header">
+  <span class="header-brand">◈ CARTAS DE CONQUISTA</span>
+  <div class="header-player">
+    <span class="player-name">jogador: <span id="header-name">—</span></span>
+    <span class="header-xp" id="header-xp">0 XP</span>
+    <button class="btn btn-red" style="padding:0.4rem 0.8rem;font-size:0.65rem" onclick="logout()">SAIR</button>
+  </div>
+</header>
+
+<main class="student-main">
+
+  <!-- XP Hero -->
+  <div class="panel xp-hero">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);letter-spacing:0.15em;margin-bottom:0.3rem">XP ATUAL</div>
+      <div class="xp-big"><span id="xp-display">0</span> <span>XP</span></div>
+    </div>
+    <div class="xp-progress-section">
+      <div class="xp-bar-labels">
+        <span>Progresso para Carta Mestra</span>
+        <span id="xp-pct">0%</span>
+      </div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-fill" id="xp-bar" style="width:0%"></div>
+      </div>
+      <div class="xp-ticks">
+        <span>0</span><span>250</span><span>500</span><span>750</span><span>1000</span>
+      </div>
+    </div>
+    <div class="xp-meta-badge">
+      <span class="crown">👑</span>
+      <span>META:</span><span>1000 XP</span>
+    </div>
+  </div>
+
+  <!-- Coluna principal -->
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+    <!-- Cartas coletadas -->
+    <div class="panel cards-section">
+      <div class="section-title">🃏 Minhas Cartas</div>
+      <div class="cards-grid" id="cards-grid">
+        <div class="card-empty">Você ainda não possui cartas.<br>Compre na lojinha!</div>
+      </div>
+    </div>
+
+    <!-- Tabela de tarefas -->
+    <div class="panel cards-section">
+      <div class="section-title">📋 Tarefas e Recompensas</div>
+      <table>
+        <thead><tr><th>Tarefa</th><th>XP</th></tr></thead>
+        <tbody>
+          <tr><td>✅ Completar exercício do dia</td>  <td style="color:var(--neon-gold);font-family:var(--font-display)">10 XP</td></tr>
+          <tr><td>🤝 Ajudar um colega</td>             <td style="color:var(--neon-gold);font-family:var(--font-display)">15 XP</td></tr>
+          <tr><td>🧩 Desafio extra de Lógica</td>       <td style="color:var(--neon-gold);font-family:var(--font-display)">30 XP</td></tr>
+          <tr><td>🐛 Encontrar e reportar um bug</td>   <td style="color:var(--neon-gold);font-family:var(--font-display)">20 XP</td></tr>
+          <tr><td>💡 Propor melhoria ou ideia</td>      <td style="color:var(--neon-gold);font-family:var(--font-display)">25 XP</td></tr>
+          <tr><td>🚀 Apresentar projeto/solução</td>    <td style="color:var(--neon-gold);font-family:var(--font-display)">40 XP</td></tr>
+          <tr><td>🏆 Completar desafios da semana</td>  <td style="color:var(--neon-gold);font-family:var(--font-display)">50 XP</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:0.8rem">
+        * O XP é concedido pelo professor conforme você realiza as tarefas.
+      </p>
+    </div>
+
+    <!-- Histórico de XP -->
+    <div class="panel log-section">
+      <div class="section-title">📜 Histórico de XP</div>
+      <div class="log-list" id="log-list">
+        <p style="font-size:0.75rem;color:var(--text-dim);font-family:var(--font-mono)">Nenhuma atividade ainda.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Coluna lateral: lojinha -->
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+    <div class="panel shop-section">
+      <div class="section-title">🛒 Lojinha de Cards</div>
+      <div class="shop-items">
+
+        <!-- Carta Aleatória -->
+        <div class="shop-item">
+          <div class="shop-item-icon">🎲</div>
+          <div class="shop-item-info">
+            <div class="shop-item-name">Carta Aleatória</div>
+            <div class="shop-item-desc">Tipo e carta sorteados ao acaso</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+            <div class="shop-item-price">50 XP</div>
+            <button class="btn btn-blue" style="padding:0.3rem 0.8rem;font-size:0.6rem"
+                    onclick="buyRandom()">SORTEAR</button>
+          </div>
+        </div>
+
+        <!-- Carta Específica -->
+        <div class="shop-item">
+          <div class="shop-item-icon">🎴</div>
+          <div class="shop-item-info">
+            <div class="shop-item-name">Carta Específica</div>
+            <div class="shop-item-desc">Escolha o tipo e a carta exata</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+            <div class="shop-item-price">100 XP</div>
+            <button class="btn btn-purple" style="padding:0.3rem 0.8rem;font-size:0.6rem"
+                    onclick="openCardPicker('especifica')">ESCOLHER</button>
+          </div>
+        </div>
+
+        <!-- Carta Mestra -->
+        <div class="shop-item" style="border-color:rgba(180,79,255,0.2);background:rgba(180,79,255,0.04)">
+          <div class="shop-item-icon">👑</div>
+          <div class="shop-item-info">
+            <div class="shop-item-name" style="color:var(--neon-purple)">Carta Mestra</div>
+            <div class="shop-item-desc">Apenas quem completar o projeto final</div>
+          </div>
+          <div class="shop-item-price" style="color:var(--neon-purple);font-size:0.65rem;text-align:right;max-width:80px">Somente via projeto</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tipos de cartas -->
+    <div class="panel" style="padding:1.5rem">
+      <div class="section-title">📚 Tipos de Cartas</div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;font-family:var(--font-mono)">
+        <div style="color:var(--card-logica)">🧠 Lógica — raciocínio e resolução</div>
+        <div style="color:var(--card-crescimento)">🌱 Crescimento — aprendizado contínuo</div>
+        <div style="color:var(--card-suporte)">🤝 Suporte — ajudar o time</div>
+        <div style="color:var(--card-velocidade)">⚡ Velocidade — agilidade e eficiência</div>
+        <div style="color:var(--card-mestra)">👑 Carta Mestra — a lenda!</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
 <div id="toast-container"></div>
 
 <script src="/js/utils.js"></script>
 <script src="/js/student.js"></script>
+<script>
+  function handleOverlayClick(e) {
+    if (e.target.id === 'card-picker-modal') closeCardPicker();
+  }
+</script>
 </body>
 </html>

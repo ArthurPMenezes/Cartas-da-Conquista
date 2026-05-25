@@ -52,21 +52,30 @@ O servidor inicia em **http://localhost:3000**
 
 ```
 cartas-de-conquista/
-├── server.js          # Servidor Express + todas as rotas da API
-├── database.js        # Inicialização do SQLite + helpers
-├── package.json       # Dependências npm
+├── server.js               # Servidor Express + todas as rotas da API
+├── database.js             # Inicialização do MongoDB + helpers
+├── package.json            # Dependências npm
+├── public/assets/cards/
+│   └── cards.json          # Catálogo de cartas (JSON com tipos e nomes)
 ├── db/
-│   └── conquista.db   # Banco SQLite (criado automaticamente)
+│   └── conquista.db        # Banco SQLite (criado automaticamente)
 └── public/
-    ├── index.html     # Página de login do aluno
-    ├── student.html   # Dashboard do aluno
-    ├── admin.html     # Painel do professor
+    ├── index.html          # Página de login do aluno
+    ├── student.html        # Dashboard do aluno
+    ├── admin.html          # Painel do professor
+    ├── assets/cards/
+    │   ├── cards.json      # Catálogo de cartas com imagens
+    │   ├── logica/         # Imagens de cartas de Lógica
+    │   ├── crescimento/    # Imagens de cartas de Crescimento
+    │   ├── suporte/        # Imagens de cartas de Suporte
+    │   ├── velocidade/     # Imagens de cartas de Velocidade
+    │   └── mestra/         # Imagens de cartas Mestra
     ├── css/
-    │   └── style.css  # Tema futurista neon
+    │   └── style.css       # Tema futurista neon com estilos do modal
     └── js/
-        ├── utils.js   # Funções compartilhadas
-        ├── student.js # Lógica do dashboard do aluno
-        └── admin.js   # Lógica do painel admin
+        ├── utils.js        # Funções compartilhadas
+        ├── student.js      # Lógica do dashboard do aluno (picker)
+        └── admin.js        # Lógica do painel admin
 ```
 
 ---
@@ -137,6 +146,54 @@ Três tabelas:
 - **1000 XP** = Carta Mestra desbloqueada pelo professor
 
 ---
+
+## 🃏 Sistema de Cartas Digitais (EAD)
+
+Para alunos a distância, o sistema oferece seleção de cartas digitais de **Magic the Gathering** filtradas por tipo (cor).
+
+### Como adicionar cartas
+
+1. **Edite o arquivo** `public/assets/cards/cards.json`
+2. **Adicione cartas** seguindo a estrutura:
+
+```json
+{
+  "logica": [
+    {
+      "id": "001",
+      "name": "Card Name",
+      "image": "/assets/cards/logica/001.jpg"
+    },
+    {
+      "id": "002",
+      "name": "Another Card",
+      "image": "/assets/cards/logica/002.jpg"
+    }
+  ],
+  "crescimento": [...],
+  "suporte": [...],
+  "velocidade": [...],
+  "mestra": [...]
+}
+```
+
+3. **Coloque as imagens** nas pastas correspondentes:
+   - `public/assets/cards/logica/` para cartas azuis
+   - `public/assets/cards/crescimento/` para cartas verdes
+   - `public/assets/cards/suporte/` para cartas amarelas
+   - `public/assets/cards/velocidade/` para cartas vermelhas
+   - `public/assets/cards/mestra/` para cartas especiais
+
+4. **Reinicie o servidor** para carregar o novo catálogo
+
+### Interface do aluno
+
+- Clique em **"ESCOLHER"** na lojinha
+- Modal abre com **5 abas** (uma por cor/tipo)
+- Clique na aba desejada para ver as cartas do tipo
+- Clique na carta específica para comprar (deduz 100 XP)
+- Carta é adicionada a "Minhas Cartas"
+
 
 ## 🔧 Personalizar senhas
 
