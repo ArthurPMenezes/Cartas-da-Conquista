@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartas de Conquista — Professor</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<!-- ── LOGIN DO PROFESSOR ────────────────────────────────── -->
+<div id="admin-login-page" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
+  <div class="login-container z1" style="max-width:400px">
+
+    <div class="login-logo">
+      <h1 style="color:var(--neon-purple)">ÁREA DO<br>PROFESSOR</h1>
+      <p class="subtitle">// ACESSO RESTRITO //</p>
+    </div>
+
+    <div class="panel login-box">
+      <h2 style="color:var(--neon-purple)">// AUTENTICAÇÃO</h2>
+      <div class="form-row">
+        <label for="admin-pass">Senha do professor</label>
+        <input type="password" id="admin-pass" placeholder="Senha..." autocomplete="off" />
+      </div>
+      <button class="btn btn-purple" style="width:100%;margin-top:1rem;padding:0.85rem" onclick="loginAdmin()">
+        ▶ ENTRAR COMO PROFESSOR
+      </button>
+      <div class="admin-link" style="margin-top:1rem">
+        <a href="/" style="color:var(--text-muted)">← Voltar para login de aluno</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PAINEL DO PROFESSOR ──────────────────────────────── -->
+<div id="admin-page" class="hidden">
+
+  <header class="admin-header">
+    <span class="admin-brand">⬡ PAINEL DO PROFESSOR</span>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted)">
+        Cartas de Conquista — Admin
+      </span>
+      <button class="btn btn-red" style="padding:0.4rem 0.8rem;font-size:0.65rem"
+              onclick="logout()">SAIR</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- Título -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
+      <h2 style="font-size:0.9rem;letter-spacing:0.15em;color:var(--text-muted)">
+        // GERENCIAMENTO DE ALUNOS
+      </h2>
+      <button class="btn btn-blue" style="font-size:0.65rem;padding:0.4rem 0.8rem"
+              onclick="loadStudents()">↻ ATUALIZAR</button>
+    </div>
+
+    <!-- Tabela de alunos -->
+    <div class="panel" style="padding:1.2rem">
+      <div class="students-table-wrap">
+        <table id="students-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Aluno</th>
+              <th>XP</th>
+              <th>Barra</th>
+              <th>Cartas</th>
+              <th>Ações Rápidas</th>
+            </tr>
+          </thead>
+          <tbody id="students-tbody">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-dim);font-family:var(--font-mono)">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grid de ações -->
+    <div class="admin-grid">
+
+      <!-- Coluna esquerda: ações manuais -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+
+        <!-- Adicionar/remover XP -->
+        <div class="panel action-panel">
+          <h3>⚡ Alterar XP do Aluno</h3>
+          <div class="form-row">
+            <label>Selecionar aluno</label>
+            <select id="xp-student-select"><option value="">-- Escolha --</option></select>
+          </div>
+          <div class="form-row">
+            <label>Quantidade de XP (use - para remover, ex: -20)</label>
+            <input type="number" id="xp-delta" placeholder="ex: 30 ou -10" />
+          </div>
+          <div class="form-row">
+            <label>Motivo</label>
+            <select id="xp-reason-select" onchange="updateReasonField()">
+              <option value="Completou o exercício do dia (+10 XP)">Completou exercício do dia</option>
+              <option value="Ajudou um colega (+15 XP)">Ajudou um colega</option>
+              <option value="Desafio extra de Lógica (+30 XP)">Desafio extra de Lógica</option>
+              <option value="Encontrou e reportou um bug (+20 XP)">Encontrou e reportou bug</option>
+              <option value="Propôs melhoria ou ideia (+25 XP)">Propôs melhoria/ideia</option>
+              <option value="Apresentou projeto ou solução (+40 XP)">Apresentou projeto/solução</option>
+              <option value="Completou todos os desafios da semana (+50 XP)">Completou desafios da semana</option>
+              <option value="outro">Outro (digitar)</option>
+            </select>
+          </div>
+          <div class="form-row" id="reason-custom-row" style="display:none">
+            <label>Motivo personalizado</label>
+            <input type="text" id="xp-reason-custom" placeholder="Descreva o motivo..." />
+          </div>
+          <button class="btn btn-gold" onclick="submitXP()">⚡ APLICAR XP</button>
+        </div>
+
+        <!-- Dar carta -->
+        <div class="panel action-panel">
+          <h3>🃏 Dar Carta Manualmente</h3>
+          <div class="form-row">
+            <label>Selecionar aluno</label>
+            <select id="card-student-select"><option value="">-- Escolha --</option></select>
+          </div>
+          <div class="form-row">
+            <label>Tipo de carta</label>
+            <select id="card-type-admin">
+              <option value="logica">🧠 Lógica</option>
+              <option value="crescimento">🌱 Crescimento</option>
+              <option value="suporte">🤝 Suporte</option>
+              <option value="velocidade">⚡ Velocidade</option>
+              <option value="mestra">👑 Carta Mestra</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Raridade</label>
+            <select id="card-rarity-admin">
+              <option value="comum">Comum</option>
+              <option value="especifica">Específica</option>
+              <option value="mestra">Mestra (especial)</option>
+            </select>
+          </div>
+          <button class="btn btn-green" onclick="submitCard()">🃏 DAR CARTA</button>
+        </div>
+
+        <!-- Reset -->
+        <div class="panel action-panel" style="border-color:rgba(255,68,68,0.2)">
+          <h3 style="color:var(--neon-red)">⚠ Resetar Progresso</h3>
+          <div class="form-row">
+            <label>Selecionar aluno</label>
+            <select id="reset-student-select"><option value="">-- Escolha --</option></select>
+          </div>
+          <button class="btn btn-red" onclick="submitReset()">⚠ RESETAR ALUNO</button>
+        </div>
+
+      </div>
+
+      <!-- Coluna direita: log global -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+
+        <div class="panel global-log">
+          <div class="section-title" style="margin-bottom:1rem">📜 Log Global de XP</div>
+          <div class="log-list-small" id="global-log"></div>
+        </div>
+
+        <!-- Info das senhas -->
+        <div class="panel" style="padding:1.5rem">
+          <div class="section-title" style="margin-bottom:1rem">🔑 Senhas dos Alunos</div>
+          <div id="passwords-list" style="font-family:var(--font-mono);font-size:0.72rem;display:flex;flex-direction:column;gap:0.4rem"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script src="/js/utils.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

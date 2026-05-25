@@ -1,0 +1,81 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "name": "Ana Luiza",
+      "password": "ana123",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.032Z"
+    },
+    {
+      "id": 2,
+      "name": "Francisco",
+      "password": "francisco456",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 3,
+      "name": "Henrique",
+      "password": "henrique789",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 4,
+      "name": "Anna Beatriz",
+      "password": "anna321",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 5,
+      "name": "Matheus",
+      "password": "matheus654",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 6,
+      "name": "Arthur",
+      "password": "arthur987",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 7,
+      "name": "Ana Beatriz",
+      "password": "beatriz111",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 8,
+      "name": "Melo",
+      "password": "henri222",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 9,
+      "name": "Isabela Torres",
+      "password": "isa333",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    },
+    {
+      "id": 10,
+      "name": "Joao Alves",
+      "password": "joao444",
+      "xp": 0,
+      "createdAt": "2026-05-18T21:11:43.033Z"
+    }
+  ],
+  "cards": [],
+  "xpLog": [],
+  "_nextId": {
+    "students": 11,
+    "cards": 15,
+    "xpLog": 42
+  }
+}

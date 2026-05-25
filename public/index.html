@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartas de Conquista — Login</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<!-- ── PÁGINA DE LOGIN ──────────────────────────────────── -->
+<div id="login-page">
+  <div class="login-container z1">
+
+    <div class="login-logo">
+      <h1>CARTAS DE<br>CONQUISTA</h1>
+      <p class="subtitle">// APRENDA · DESAFIE · EVOLUA //</p>
+    </div>
+
+    <!-- Login do aluno -->
+    <div class="panel login-box" id="student-login-box">
+      <h2>// ACESSO DO ALUNO</h2>
+
+      <div class="form-row">
+        <label for="student-pass">Sua senha</label>
+        <input
+          type="password"
+          id="student-pass"
+          placeholder="Digite sua senha..."
+          autocomplete="off"
+        />
+      </div>
+
+      <button class="btn btn-solid-blue" onclick="loginStudent()">
+        ▶ ENTRAR
+      </button>
+
+      <div class="admin-link" style="margin-top:1.5rem">
+        <a href="admin.html">Acesso do professor →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script src="/js/utils.js"></script>
+<script>
+  // ── Verificar se já tem sessão ativa ──────────────────
+  (async () => {
+    const res  = await fetch('/api/me');
+    const data = await res.json();
+    if (data.role === 'student') window.location.href = '/student.html';
+    if (data.role === 'admin')   window.location.href = '/admin.html';
+  })();
+
+  // ── Função de login do aluno ──────────────────────────
+  async function loginStudent() {
+    const pass = document.getElementById('student-pass').value.trim();
+    if (!pass) return showToast('Digite sua senha!', 'error');
+
+    try {
+      const res  = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) return showToast(data.error || 'Senha incorreta', 'error');
+
+      showToast(`Bem-vindo, ${data.name}!`, 'success');
+      setTimeout(() => window.location.href = '/student.html', 800);
+    } catch (e) {
+      showToast('Erro de conexão', 'error');
+    }
+  }
+
+  // Enter para confirmar
+  document.getElementById('student-pass')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') loginStudent(); });
+</script>
+</body>
+</html>
