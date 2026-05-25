@@ -1,42 +1,18 @@
 // ============================================================
-// database.js — Banco de dados baseado em arquivo JSON
-// (compatível com qualquer ambiente Node.js, sem compilação nativa)
+// database.js — Banco de dados MongoDB Atlas
+// Usa a variável de ambiente MONGO_URI para conectar
 // ============================================================
-const fs   = require('fs');
-const path = require('path');
+const { MongoClient, ObjectId } = require('mongodb');
 
-const DB_PATH = path.join(__dirname, 'db', 'conquista.json');
-
-// ── Garantir que a pasta db exista ───────────────────────
-if (!fs.existsSync(path.dirname(DB_PATH))) {
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+// ── URI vem da variável de ambiente (definida no Render) ──
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('\n❌ ERRO: variável MONGO_URI não definida!');
+  console.error('   Defina ela no Render > Environment > MONGO_URI\n');
+  process.exit(1);
 }
 
-// ── Estrutura do banco em memória ─────────────────────────
-let _db = {
-  students: [],  // { id, name, password, xp }
-  cards:    [],  // { id, studentId, cardType, rarity, acquiredAt }
-  xpLog:    [],  // { id, studentId, delta, reason, loggedAt }
-  _nextId:  { students: 1, cards: 1, xpLog: 1 },
-};
-
-// ── Carrega o banco do disco (se existir) ─────────────────
-function load() {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      _db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-    }
-  } catch (e) {
-    console.error('Erro ao carregar banco:', e.message);
-  }
-}
-
-// ── Salva o banco no disco ────────────────────────────────
-function save() {
-  fs.writeFileSync(DB_PATH, JSON.stringify(_db, null, 2), 'utf8');
-}
-
-// ── Seed inicial: 10 alunos ───────────────────────────────
+// ── Seed: 10 alunos iniciais ──────────────────────────────
 const STUDENTS_SEED = [
   { name: 'Ana Luiza',       password: 'ana123'    },
   { name: 'Francisco',       password: 'francisco456'  },
@@ -50,114 +26,136 @@ const STUDENTS_SEED = [
   { name: 'Joao Alves',      password: 'joao444'   },
 ];
 
-function seed() {
+// ── Variáveis do cliente e coleções ──────────────────────
+let studentsCol, cardsCol, xpLogCol;
+
+// ── Conecta e retorna o módulo pronto ────────────────────
+async function connect() {
+  const client = new MongoClient(MONGO_URI);
+  await client.connect();
+  const db = client.db('cartas'); // nome do banco
+
+  studentsCol = db.collection('students');
+  cardsCol    = db.collection('cards');
+  xpLogCol    = db.collection('xplog');
+
+  // Índices para buscas rápidas
+  await studentsCol.createIndex({ password: 1 }, { unique: true });
+  await cardsCol.createIndex({ studentId: 1 });
+  await xpLogCol.createIndex({ studentId: 1 });
+
+  // Insere alunos iniciais se ainda não existirem
   for (const s of STUDENTS_SEED) {
-    const exists = _db.students.find(x => x.password === s.password);
-    if (!exists) {
-      _db.students.push({
-        id: _db._nextId.students++,
-        name: s.name,
-        password: s.password,
-        xp: 0,
-        createdAt: new Date().toISOString(),
-      });
-    }
+    await studentsCol.updateOne(
+      { password: s.password },
+      { $setOnInsert: { name: s.name, password: s.password, xp: 0, createdAt: new Date() } },
+      { upsert: true }
+    );
   }
-  save();
+
+  console.log('✅ MongoDB Atlas conectado!');
 }
 
-// ── Inicializa ────────────────────────────────────────────
-load();
-seed();
+// ─────────────────────────────────────────────────────────
+// HELPERS — todos async (retornam Promise)
+// ─────────────────────────────────────────────────────────
 
-// ═════════════════════════════════════════════════════════
-// HELPERS EXPORTADOS
-// ═════════════════════════════════════════════════════════
+/** Busca aluno pela senha */
+async function findByPassword(pwd) {
+  return studentsCol.findOne({ password: pwd });
+}
+
+/** Retorna todos os alunos ordenados por XP (sem a senha) */
+async function allStudents() {
+  const list = await studentsCol
+    .find({}, { projection: { password: 0 } })
+    .sort({ xp: -1 })
+    .toArray();
+  // Normaliza _id para id string
+  return list.map(s => ({ ...s, id: s._id.toString() }));
+}
+
+/** Busca aluno por ID (sem a senha) */
+async function findById(id) {
+  let query;
+  try { query = { _id: new ObjectId(id) }; }
+  catch { return null; }
+  const s = await studentsCol.findOne(query, { projection: { password: 0 } });
+  return s ? { ...s, id: s._id.toString() } : null;
+}
+
+/** Altera XP de um aluno e registra no log */
+async function changeXP(studentId, delta, reason) {
+  let oid;
+  try { oid = new ObjectId(studentId); } catch { return; }
+
+  // Garante que o XP não fique negativo
+  const student = await studentsCol.findOne({ _id: oid });
+  const novoXP  = Math.max(0, (student?.xp || 0) + Number(delta));
+
+  await studentsCol.updateOne({ _id: oid }, { $set: { xp: novoXP } });
+  await xpLogCol.insertOne({
+    studentId: studentId.toString(),
+    delta: Number(delta),
+    reason,
+    loggedAt: new Date(),
+  });
+}
+
+/** Adiciona carta ao aluno */
+async function addCard(studentId, cardType, rarity = 'comum') {
+  await cardsCol.insertOne({
+    studentId: studentId.toString(),
+    card_type: cardType,
+    rarity,
+    acquired_at: new Date(),
+  });
+}
+
+/** Retorna cartas de um aluno (mais recentes primeiro) */
+async function getCards(studentId) {
+  return cardsCol
+    .find({ studentId: studentId.toString() })
+    .sort({ acquired_at: -1 })
+    .toArray();
+}
+
+/** Histórico de XP de um aluno (últimas 20) */
+async function getXPLog(studentId) {
+  return xpLogCol
+    .find({ studentId: studentId.toString() })
+    .sort({ loggedAt: -1 })
+    .limit(20)
+    .toArray();
+}
+
+/** Log global com nome do aluno (últimas 50) */
+async function allXPLog() {
+  const logs     = await xpLogCol.find().sort({ loggedAt: -1 }).limit(50).toArray();
+  const students = await studentsCol.find().toArray();
+  const map      = {};
+  students.forEach(s => { map[s._id.toString()] = s.name; });
+  return logs.map(l => ({ ...l, name: map[l.studentId] || '?' }));
+}
+
+/** Reset completo de um aluno */
+async function resetStudent(studentId) {
+  let oid;
+  try { oid = new ObjectId(studentId); } catch { return; }
+  await studentsCol.updateOne({ _id: oid }, { $set: { xp: 0 } });
+  await cardsCol.deleteMany({ studentId: studentId.toString() });
+  await xpLogCol.deleteMany({ studentId: studentId.toString() });
+}
 
 module.exports = {
-
-  /** Busca aluno pela senha */
-  findByPassword(pwd) {
-    return _db.students.find(s => s.password === pwd) || null;
-  },
-
-  /** Retorna todos os alunos ordenados por XP (sem a senha) */
-  allStudents() {
-    return _db.students
-      .slice()
-      .sort((a, b) => b.xp - a.xp)
-      .map(({ password, ...rest }) => rest);
-  },
-
-  /** Busca aluno por ID (sem a senha) */
-  findById(id) {
-    const s = _db.students.find(s => s.id === Number(id));
-    if (!s) return null;
-    const { password, ...rest } = s;
-    return rest;
-  },
-
-  /** Altera XP de um aluno e registra no log */
-  changeXP(studentId, delta, reason) {
-    const s = _db.students.find(s => s.id === Number(studentId));
-    if (!s) return;
-    s.xp = Math.max(0, s.xp + Number(delta));
-    _db.xpLog.push({
-      id: _db._nextId.xpLog++,
-      studentId: Number(studentId),
-      delta: Number(delta),
-      reason,
-      loggedAt: new Date().toISOString(),
-    });
-    save();
-  },
-
-  /** Adiciona carta ao aluno */
-  addCard(studentId, cardType, rarity = 'comum') {
-    _db.cards.push({
-      id: _db._nextId.cards++,
-      studentId: Number(studentId),
-      card_type: cardType,
-      rarity,
-      acquired_at: new Date().toISOString(),
-    });
-    save();
-  },
-
-  /** Retorna cartas de um aluno (mais recentes primeiro) */
-  getCards(studentId) {
-    return _db.cards
-      .filter(c => c.studentId === Number(studentId))
-      .sort((a, b) => new Date(b.acquired_at) - new Date(a.acquired_at));
-  },
-
-  /** Historico de XP de um aluno (ultimas 20) */
-  getXPLog(studentId) {
-    return _db.xpLog
-      .filter(l => l.studentId === Number(studentId))
-      .sort((a, b) => new Date(b.loggedAt) - new Date(a.loggedAt))
-      .slice(0, 20);
-  },
-
-  /** Log global de XP com nome do aluno (ultimas 50) */
-  allXPLog() {
-    return _db.xpLog
-      .slice()
-      .sort((a, b) => new Date(b.loggedAt) - new Date(a.loggedAt))
-      .slice(0, 50)
-      .map(entry => {
-        const student = _db.students.find(s => s.id === entry.studentId);
-        return { ...entry, name: student ? student.name : '?' };
-      });
-  },
-
-  /** Reset completo de um aluno */
-  resetStudent(studentId) {
-    const id = Number(studentId);
-    const s  = _db.students.find(s => s.id === id);
-    if (s) s.xp = 0;
-    _db.cards  = _db.cards.filter(c => c.studentId !== id);
-    _db.xpLog  = _db.xpLog.filter(l => l.studentId !== id);
-    save();
-  },
+  connect,
+  findByPassword,
+  allStudents,
+  findById,
+  changeXP,
+  addCard,
+  getCards,
+  getXPLog,
+  allXPLog,
+  resetStudent,
 };
