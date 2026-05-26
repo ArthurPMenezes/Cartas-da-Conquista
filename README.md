@@ -43,28 +43,6 @@ mongodb+srv://usuario:senha@cluster.mongodb.net/cartas?retryWrites=true&w=majori
 
 ---
 
-## 🔑 Senhas de acesso
-
-### Alunos
-| Aluno            | Senha       |
-|------------------|-------------|
-| Ana Lima         | `ana123`    |
-| Bruno Silva      | `bruno456`  |
-| Carla Mendes     | `carla789`  |
-| Diego Costa      | `diego321`  |
-| Eduarda Reis     | `edu654`    |
-| Felipe Souza     | `felipe987` |
-| Gabriela Nunes   | `gabi111`   |
-| Henrique Melo    | `henri222`  |
-| Isabela Torres   | `isa333`    |
-| João Alves       | `joao444`   |
-
-### Professor (Admin)
-- URL: `http://localhost:3000/admin.html`
-- Senha: `professor2024`
-
----
-
 ## 🗂️ Estrutura do projeto
 
 ```
